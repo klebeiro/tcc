@@ -1,7 +1,8 @@
 \documentclass[border=4pt]{standalone}
-\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{mathptmx}
+\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{mathptmx}\usepackage[brazil]{babel}
 \usepackage{tikz}\usetikzlibrary{positioning,arrows.meta,calc,fit}
 \begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000\tolerance=9999\frenchspacing
 \begin{tikzpicture}[font=\normalsize,node distance=0.55cm and 0.6cm,
   b/.style={draw,rounded corners=2pt,align=center,text width=3.4cm,minimum height=1.1cm,fill=#1},b/.default=gray!8,
   arr/.style={-{Latex[length=2.2mm]},thick}]

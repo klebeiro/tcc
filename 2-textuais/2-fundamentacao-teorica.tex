@@ -1,7 +1,7 @@
 \chapter{Fundamentação Teórica}
 \label{cap:fundamentacao-teorica}
 
-Neste capítulo são apresentados os conceitos usados ao longo deste trabalho. Primeiro, é feita uma explicação sobre a retina, o exame de fundoscopia e a retinopatia diabética, com foco nos exsudatos duros e moles. Depois vêm o pré-processamento das imagens, os fundamentos de aprendizado profundo e as redes que serão comparadas, e por último a segmentação, as funções de perda, a validação, as métricas, os testes estatísticos e os sistemas de diagnóstico auxiliado por computador (CAD, do inglês \textit{Computer-Aided Diagnosis}).
+Neste capítulo são apresentados os conceitos usados ao longo deste trabalho. Primeiro, é feita uma explicação sobre a retina, o exame de fundoscopia e a retinopatia diabética, com foco nos exsudatos duros e moles. Em seguida, apresentam-se o pré-processamento das imagens, os fundamentos de aprendizado profundo e as redes que serão comparadas, e por último a segmentação, as funções de perda, a validação, as métricas, os testes estatísticos e os sistemas de diagnóstico auxiliado por computador (CAD, do inglês \textit{Computer-Aided Diagnosis}).
 
 \section{Anatomia da retina e fundoscopia}
 \label{sec:anatomia-retina}
@@ -62,7 +62,7 @@ Para padronizar o diagnóstico, \citeonline{wilkinson2003icdr} propuseram a esca
 	}
 \end{table}
 
-O edema macular é avaliado em uma escala separada, como ausente ou presente e, quando presente, como leve, moderado ou grave, conforme a distância entre o espessamento ou os exsudatos duros e o centro da mácula \cite{wilkinson2003icdr}. Em programas de rastreamento, os graus são juntados no problema binário de RD referenciável, que reúne os casos de RDNP moderada ou pior e/ou com edema macular, que precisam ser encaminhados a um oftalmologista \cite{gulshan2016}. Como a fotografia não mostra a espessura da retina, \citeonline{krause2018grader} consideraram como edema macular referenciável a presença de exsudatos duros a até um diâmetro de disco do centro da fóvea, uma regra que depende diretamente da localização dos exsudatos.
+O edema macular é avaliado em uma escala separada, como ausente ou presente e, quando presente, como leve, moderado ou grave, conforme a distância entre o espessamento ou os exsudatos duros e o centro da mácula \cite{wilkinson2003icdr}. Em programas de rastreamento, os graus são agrupados no problema binário de RD referenciável, que reúne os casos de RDNP moderada ou pior e/ou com edema macular, que precisam ser encaminhados a um oftalmologista \cite{gulshan2016}. Como a fotografia não mostra a espessura da retina, \citeonline{krause2018grader} consideraram como edema macular referenciável a presença de exsudatos duros a até um diâmetro de disco do centro da fóvea, uma regra que depende diretamente da localização dos exsudatos.
 
 \section{Pré-processamento de imagens de fundo de olho}
 \label{sec:ft-preprocessamento}
@@ -73,7 +73,7 @@ Para melhorar o contraste, a técnica mais usada é a equalização adaptativa d
 
 O vencedor da competição de RD do Kaggle em 2015 subtraiu de cada imagem uma versão borrada por filtro gaussiano, para destacar detalhes locais e reduzir diferenças de iluminação \cite{graham2015kaggle}. Quando se usam redes pré-treinadas, os pixels também são normalizados com a média e o desvio padrão de cada canal do ImageNet.
 
-A resolução de entrada também importa. Redes pré-treinadas no ImageNet foram pensadas para $224 \times 224$ pixels, mas reduzir uma imagem de $4288 \times 2848$ pixels para esse tamanho faz lesões pequenas quase sumirem. \citeonline{sahlsten2019} observaram que resoluções maiores melhoram a gradação da RD, e por isso a classificação deste trabalho usará imagens de 384 pixels de lado (e de 512 pixels em um teste opcional), um meio-termo entre o detalhe das lesões e o custo de memória. Na segmentação o problema é ainda maior, o que leva ao uso de recortes em alta resolução (Seção~\ref{sec:seg-lesoes}).
+A resolução de entrada também importa. Redes pré-treinadas no ImageNet foram pensadas para $224 \times 224$ pixels, mas reduzir uma imagem de $4288 \times 2848$ pixels para esse tamanho torna lesões pequenas praticamente imperceptíveis. \citeonline{sahlsten2019} observaram que resoluções maiores melhoram a gradação da RD, o que leva ao uso de resoluções intermediárias, como 384 ou 512 pixels de lado, como um meio-termo entre o detalhe das lesões e o custo de memória. Na segmentação o problema é ainda maior, o que leva ao uso de recortes em alta resolução (Seção~\ref{sec:seg-lesoes}).
 
 \subsection{Aumento de dados}
 \label{sec:aumento-dados}
@@ -99,12 +99,12 @@ Os neurônios são organizados em camadas, e o treinamento consiste em encontrar
 
 O Adam é um dos otimizadores mais usados. Ele guarda médias móveis do gradiente e do quadrado do gradiente e, com elas, ajusta o tamanho do passo de cada parâmetro separadamente \cite{kingma2015adam}. O AdamW é uma variação em que o decaimento de pesos (\textit{weight decay}) é aplicado direto sobre os parâmetros, separado da atualização pelo gradiente, o que melhora a regularização em relação ao Adam com penalização L2 \cite{loshchilov2019adamw}.
 
-O sobreajuste (\textit{overfitting}) acontece quando o modelo decora os exemplos de treino e passa a errar mais em dados novos. Para reduzir isso, usam-se o decaimento de pesos, o aumento de dados, o \textit{dropout}, que desliga aleatoriamente parte dos neurônios durante o treino \cite{srivastava2014dropout}, e a parada antecipada (\textit{early stopping}), que interrompe o treino quando o desempenho na validação para de melhorar e mantém os pesos da melhor época.
+O sobreajuste (\textit{overfitting}) acontece quando o modelo memoriza os exemplos de treino e passa a errar mais em dados novos. Para reduzir isso, usam-se o decaimento de pesos, o aumento de dados, o \textit{dropout}, que desliga aleatoriamente parte dos neurônios durante o treino \cite{srivastava2014dropout}, e a parada antecipada (\textit{early stopping}), que interrompe o treino quando o desempenho na validação para de melhorar e mantém os pesos da melhor época.
 
 \subsection{Redes neurais convolucionais}
 \label{sec:cnn}
 
-As redes neurais convolucionais (CNNs, do inglês \textit{Convolutional Neural Networks}) são redes criadas para dados organizados em grade, como imagens. Em vez de ligar cada pixel a todos os neurônios da camada seguinte, a CNN usa filtros pequenos (\textit{kernels}) que percorrem a imagem e compartilham os mesmos pesos em todas as posições. Com isso, o número de parâmetros cai bastante, e a rede consegue detectar o mesmo padrão em qualquer lugar da imagem \cite{lecun2015deep}. A operação de convolução em duas dimensões, para uma entrada $I$ e um filtro $K$ de tamanho $k \times k$, é dada pela Equação~\ref{eq:convolucao}:
+As redes neurais convolucionais (CNNs, do inglês \textit{Convolutional Neural Networks}) são redes criadas para dados organizados em grade, como imagens. Em vez de ligar cada pixel a todos os neurônios da camada seguinte, a CNN usa filtros pequenos (\textit{kernels}) que percorrem a imagem e compartilham os mesmos pesos em todas as posições. Com isso, o número de parâmetros se reduz de forma substancial, e a rede consegue detectar o mesmo padrão em qualquer lugar da imagem \cite{lecun2015deep}. A operação de convolução em duas dimensões, para uma entrada $I$ e um filtro $K$ de tamanho $k \times k$, é dada pela Equação~\ref{eq:convolucao}:
 \begin{equation}
 	\label{eq:convolucao}
 	S(i,j) = \sum_{m=0}^{k-1} \sum_{n=0}^{k-1} I(i+m,\, j+n)\, K(m,n).
@@ -147,12 +147,12 @@ Com o aumento da profundidade das redes, foi observado o problema da degradaçã
 	}
 \end{figure}
 
-Esse atalho facilita a passagem do gradiente e permitiu treinar redes com centenas de camadas. Para não ficar caro demais, a ResNet50 usa blocos de gargalo (\textit{bottleneck}), com uma convolução $1 \times 1$ que reduz os canais, uma $3 \times 3$ e outra $1 \times 1$ que volta ao número original \cite{he2016resnet}.
+Esse atalho facilita a passagem do gradiente e permitiu treinar redes com centenas de camadas. Para reduzir o custo computacional, a ResNet50 usa blocos de gargalo (\textit{bottleneck}), com uma convolução $1 \times 1$ que reduz os canais, uma $3 \times 3$ e outra $1 \times 1$ que volta ao número original \cite{he2016resnet}.
 
 \subsection{MobileNetV3}
 \label{sec:mobilenet}
 
-As MobileNets nasceram para rodar em celulares. A base de todas é a convolução separável em profundidade (\textit{depthwise separable convolution}), que divide a convolução comum em um filtro $3 \times 3$ aplicado em cada canal separadamente e uma convolução $1 \times 1$ que combina os canais, reduzindo o custo em cerca de oito a nove vezes com pouca perda de acurácia \cite{howard2017mobilenets}. Neste trabalho será usada a MobileNetV3-Large, que tem bem menos parâmetros que a VGG16 e a ResNet50 \cite{howard2019mobilenetv3}, sendo uma opção para computadores mais simples. Ela foi encontrada por busca automática de arquitetura a partir dos blocos residuais invertidos da MobileNetV2 \cite{sandler2018mobilenetv2}, com atenção entre canais (\textit{squeeze-and-excitation}) e a ativação \textit{h-swish} \cite{howard2019mobilenetv3}.
+As MobileNets foram projetadas para dispositivos móveis. A base de todas é a convolução separável em profundidade (\textit{depthwise separable convolution}), que divide a convolução comum em um filtro $3 \times 3$ aplicado em cada canal separadamente e uma convolução $1 \times 1$ que combina os canais, reduzindo o custo em cerca de oito a nove vezes com pouca perda de acurácia \cite{howard2017mobilenets}. A versão usada neste trabalho é a MobileNetV3-Large, que tem bem menos parâmetros que a VGG16 e a ResNet50 \cite{howard2019mobilenetv3}, sendo pensada para equipamentos com pouca capacidade de processamento. Ela foi encontrada por busca automática de arquitetura a partir dos blocos residuais invertidos da MobileNetV2 \cite{sandler2018mobilenetv2}, com atenção entre canais (\textit{squeeze-and-excitation}) e a ativação \textit{h-swish} \cite{howard2019mobilenetv3}.
 
 \subsection{EfficientNet-B0}
 \label{sec:efficientnet}
@@ -191,7 +191,7 @@ Diferente das CNNs, o ViT não traz embutidas as noções de localidade e de inv
 \subsection{Swin Transformer}
 \label{sec:swin}
 
-No ViT, cada \textit{token} presta atenção em todos os outros, e o custo cresce com o quadrado do número de \textit{tokens}. Em imagens de alta resolução, esse custo fica alto. Ele também trabalha com uma única escala, o que não combina bem com a segmentação. O Swin Transformer, de \citeonline{liu2021swin}, ataca esses dois pontos. A autoatenção é calculada só dentro de janelas locais e, de um bloco para o outro, as janelas são deslocadas (\textit{shifted windows}), para que janelas vizinhas troquem informação. Com isso, o custo passa a crescer de forma linear com o tamanho da imagem. O Swin também é hierárquico: ao longo de quatro estágios, a fusão de \textit{patches} (\textit{patch merging}) junta \textit{tokens} vizinhos e reduz a resolução, gerando mapas em várias escalas, como em uma CNN \cite{liu2021swin}. A versão usada aqui é a menor delas, a Swin-T.
+No ViT, cada \textit{token} presta atenção em todos os outros, e o custo cresce com o quadrado do número de \textit{tokens}. Em imagens de alta resolução, esse custo fica alto. Ele também trabalha com uma única escala, o que não combina bem com a segmentação. O Swin Transformer, de \citeonline{liu2021swin}, trata essas duas limitações. A autoatenção é calculada só dentro de janelas locais e, de um bloco para o outro, as janelas são deslocadas (\textit{shifted windows}), para que janelas vizinhas troquem informação. Com isso, o custo passa a crescer de forma linear com o tamanho da imagem. O Swin também é hierárquico: ao longo de quatro estágios, a fusão de \textit{patches} (\textit{patch merging}) junta \textit{tokens} vizinhos e reduz a resolução, gerando mapas em várias escalas, como em uma CNN \cite{liu2021swin}. A versão usada aqui é a menor delas, a Swin-T.
 
 \subsection{Custo das arquiteturas}
 \label{sec:custo-arquiteturas}
@@ -203,7 +203,7 @@ A Tabela~\ref{tab:arquiteturas} reúne o número de parâmetros e o custo de cad
 	\IBGEtab{}{%
 		\begin{tabular}{llcc}
 			\toprule
-			Família & Versão & Parâmetros (milhões) & Custo a $224 \times 224$ (bilhões) \\
+			Família & Versão & Parâmetros (milhões) & \begin{tabular}[b]{@{}c@{}}Custo de referência a $224 \times 224$\\(GMACs ou GFLOPs, conforme a fonte)\end{tabular} \\
 			\midrule
 			Tradicional & VGG16 & 138 & 15,3\textsuperscript{b} \\
 			Tradicional & ResNet50 & 26\textsuperscript{c} & 3,8 \\
@@ -214,7 +214,7 @@ A Tabela~\ref{tab:arquiteturas} reúne o número de parâmetros e o custo de cad
 			\bottomrule
 		\end{tabular}%
 	}{%
-		\Fonte{elaborada pelo autor com dados de \citeonline{simonyan2015vgg}, \citeonline{he2016resnet}, \citeonline{howard2017mobilenets}, \citeonline{howard2019mobilenetv3}, \citeonline{tan2019efficientnet}, \citeonline{dosovitskiy2021vit} e \citeonline{liu2021swin}. \textsuperscript{a}Valor informado por \citeonline{liu2021swin} para o DeiT-B, que tem a mesma arquitetura do ViT-B/16. \textsuperscript{b}Valor informado por \citeonline{howard2017mobilenets}. \textsuperscript{c}Valor informado por \citeonline{tan2019efficientnet}.}%
+		\Fonte{elaborada pelo autor com dados de \citeonline{simonyan2015vgg}, \citeonline{he2016resnet}, \citeonline{howard2017mobilenets}, \citeonline{howard2019mobilenetv3}, \citeonline{tan2019efficientnet}, \citeonline{dosovitskiy2021vit} e \citeonline{liu2021swin}. \textsuperscript{a}Valor informado por \citeonline{liu2021swin} para o DeiT-B, que tem a mesma arquitetura do ViT-B/16. \textsuperscript{b}Valor informado por \citeonline{howard2017mobilenets}. \textsuperscript{c}Valor informado por \citeonline{tan2019efficientnet}. Nota: valores de referência retirados da literatura, e não medidos neste trabalho. Os custos da VGG16, da ResNet50 e da MobileNetV3-Large são informados pelas fontes como multiplicações-somas (GMACs), e os da EfficientNet-B0, do ViT-B/16 e do Swin-T são chamados de FLOPs (GFLOPs) pelas fontes.}%
 	}
 \end{table}
 
@@ -243,20 +243,20 @@ A U-Net, proposta por \citeonline{ronneberger2015unet} para imagens biomédicas,
 \subsection{U-Net com codificadores pré-treinados}
 \label{sec:unet-variantes}
 
-\citeonline{iglovikov2018ternausnet} mostraram que trocar o codificador original da U-Net por uma rede de classificação pré-treinada no ImageNet, no caso uma VGG11, melhora a segmentação. Com as CNNs, a troca é direta: os mapas de cada estágio do codificador, em resoluções cada vez menores, vão para as conexões de salto do decodificador. Assim, de um modelo para outro só muda o codificador, e o decodificador continua o mesmo, o que deixa a comparação entre as redes mais justa.
+\citeonline{iglovikov2018ternausnet} mostraram que trocar o codificador original da U-Net por uma rede de classificação pré-treinada no ImageNet, no caso uma VGG11, melhora a segmentação. Com as CNNs, a troca é direta: os mapas de cada estágio do codificador, em resoluções cada vez menores, vão para as conexões de salto do decodificador. Assim, de um modelo para outro só muda o codificador, e o decodificador continua o mesmo, o que deixa a comparação entre as redes mais controlada.
 
-O Swin-T também se encaixa sem grandes mudanças, porque os seus quatro estágios já geram mapas em 1/4, 1/8, 1/16 e 1/32 da resolução da entrada, como os de uma CNN \cite{liu2021swin}. O ViT é o caso mais difícil, já que todos os seus \textit{tokens} ficam em uma única resolução, de 1/16 da imagem. A UNETR resolve isso pegando a saída de quatro blocos intermediários do \textit{Transformer} (o 3, o 6, o 9 e o 12), remontando cada sequência de \textit{tokens} como um mapa e reamostrando esses mapas para resoluções diferentes, que então entram nas conexões de salto de um decodificador convolucional \cite{hatamizadeh2022unetr}. A UNETR foi proposta para volumes 3D, mas a mesma ideia pode ser usada em 2D, e é assim que o ViT-B/16 será ligado ao mesmo decodificador U-Net das outras cinco redes.
+O Swin-T também se encaixa sem grandes mudanças, porque os seus quatro estágios já geram mapas em 1/4, 1/8, 1/16 e 1/32 da resolução da entrada, como os de uma CNN \cite{liu2021swin}. O ViT é o caso mais difícil, já que todos os seus \textit{tokens} ficam em uma única resolução, de 1/16 da imagem. A UNETR resolve isso extraindo a saída de quatro blocos intermediários do \textit{Transformer} (o 3, o 6, o 9 e o 12), remontando cada sequência de \textit{tokens} como um mapa e reamostrando esses mapas para resoluções diferentes, que então entram nas conexões de salto de um decodificador convolucional \cite{hatamizadeh2022unetr}. A UNETR foi proposta para volumes 3D, mas a mesma ideia pode ser usada em 2D, o que permite ligar um ViT a um decodificador U-Net igual ao usado com as CNNs.
 
-Outras redes já mostraram que \textit{Transformers} funcionam bem como codificadores em U, como a TransUNet \cite{chen2021transunet} e a Swin-Unet \cite{cao2023swinunet}. Elas não foram adotadas como estrutura principal porque cada uma tem o seu próprio decodificador e porque o codificador da TransUNet é híbrido, com uma ResNet-50 antes do ViT \cite{chen2021transunet}. Se ela fosse usada, parte do resultado do ViT viria da ResNet50, que também é um dos modelos comparados.
+Outras redes já mostraram que \textit{Transformers} funcionam bem como codificadores em U, como a TransUNet \cite{chen2021transunet} e a Swin-Unet \cite{cao2023swinunet}. Cada uma tem o seu próprio decodificador, e o codificador da TransUNet é híbrido, com uma ResNet-50 antes do ViT \cite{chen2021transunet}.
 
-O nome W-Net também aparece na literatura, mas para duas propostas diferentes: duas U-Nets em sequência para segmentação não supervisionada \cite{xia2017wnet} e duas U-Nets muito pequenas em cascata para segmentar vasos da retina \cite{galdran2022wnet}. Nenhuma das duas foi pensada para receber codificadores pré-treinados intercambiáveis, e por isso a estrutura comum adotada é a U-Net.
+O nome W-Net também aparece na literatura, mas para duas propostas diferentes: duas U-Nets em sequência para segmentação não supervisionada \cite{xia2017wnet} e duas U-Nets muito pequenas em cascata para segmentar vasos da retina \cite{galdran2022wnet}. Nenhuma das duas foi pensada para receber codificadores pré-treinados intercambiáveis.
 
 \subsection{Segmentação de lesões pequenas}
 \label{sec:seg-lesoes}
 
 A segmentação de exsudatos tem duas dificuldades principais: o desbalanceamento, já que as lesões ocupam uma fração muito pequena dos pixels, e o tamanho das lesões, muitas com poucos pixels de diâmetro mesmo na resolução original. Por isso, vários trabalhos com o IDRiD treinam com recortes (\textit{patches}) da imagem na resolução original. \citeonline{zong2020unet}, por exemplo, tiraram os recortes das imagens originais com a ajuda de superpixels.
 
-Os recortes podem ser, por exemplo, de $512 \times 512$ pixels, dando preferência a recortes com lesões. Na inferência, a imagem inteira é percorrida por uma janela deslizante (\textit{sliding window}) do mesmo tamanho usado no treino, com sobreposição entre janelas vizinhas, e as predições das regiões sobrepostas são combinadas, como no nnU-Net, em que a sobreposição é de metade do recorte \cite{isensee2021nnunet}. Desse jeito, a imagem inteira não precisa caber de uma vez na memória da unidade de processamento gráfico (GPU, do inglês \textit{Graphics Processing Unit}).
+Os recortes podem ser, por exemplo, de $512 \times 512$ pixels, dando preferência a recortes com lesões. Na inferência, a imagem inteira é percorrida por uma janela deslizante (\textit{sliding window}) do mesmo tamanho usado no treino, com sobreposição entre janelas vizinhas, e as predições das regiões sobrepostas são combinadas, como no nnU-Net, em que a sobreposição é de metade do recorte \cite{isensee2021nnunet}. Dessa forma, a imagem inteira não precisa caber de uma vez na memória da unidade de processamento gráfico (GPU, do inglês \textit{Graphics Processing Unit}).
 
 \section{Funções de perda}
 \label{sec:perdas}
@@ -268,19 +268,19 @@ A função de perda define o que a rede tenta minimizar durante o treino. Na cla
 \end{equation}
 em que $y_c$ vale 1 para a classe correta e 0 para as demais, e $p_c$ é a probabilidade prevista para a classe $c$. Na segmentação, com um canal sigmoide por lesão, usa-se a versão binária dessa perda (BCE, do inglês \textit{Binary Cross-Entropy}), calculada pixel a pixel. Na classificação da RD, como os graus são desbalanceados, cada termo pode ser multiplicado por um peso $w_c$, maior para as classes raras.
 
-Os graus da RD também são ordenados, e errar o grau 4 por 0 é bem pior do que errar por 3. A entropia cruzada não enxerga essa ordem, então há duas alternativas: tratar o grau como um valor contínuo, com regressão, e depois arredondar por limiares, ou usar uma perda que leve a ordem em conta, como a baseada no kappa ponderado \cite{delatorre2018kappa}. A perda focal (\textit{focal loss}) é outra variação da entropia cruzada, que reduz o peso dos exemplos que a rede já acerta com alta confiança e concentra o treino nos exemplos difíceis \cite{lin2017focal}.
+Os graus da RD também são ordenados, e errar o grau 4 por 0 é bem pior do que errar por 3. A entropia cruzada não considera essa ordem, então há duas alternativas: tratar o grau como um valor contínuo, com regressão, e depois arredondar por limiares, ou usar uma perda que leve a ordem em conta, como a baseada no kappa ponderado \cite{delatorre2018kappa}. A perda focal (\textit{focal loss}) é outra variação da entropia cruzada, que reduz o peso dos exemplos que a rede já acerta com alta confiança e concentra o treino nos exemplos difíceis \cite{lin2017focal}.
 
 Na segmentação, outra perda muito usada é a \textit{Dice loss}, baseada no coeficiente de Dice, que mede a sobreposição entre a predição e a máscara de referência \cite{milletari2016vnet}. Uma das formas de escrevê-la é a Equação~\ref{eq:dice-loss}:
 \begin{equation}
 	\label{eq:dice-loss}
 	\mathcal{L}_{Dice} = 1 - \frac{2\sum_{i} p_i g_i + \epsilon}{\sum_{i} p_i^2 + \sum_{i} g_i^2 + \epsilon},
 \end{equation}
-em que $p_i$ é a probabilidade prevista para o pixel $i$, $g_i$ é o seu rótulo (0 ou 1) e $\epsilon$ é uma constante pequena que evita a divisão por zero em recortes sem lesão. Como ela olha para a sobreposição da lesão como um todo, é menos afetada pela grande quantidade de fundo. Na comparação de \citeonline{ma2021loss}, as perdas compostas, que somam a entropia cruzada e a \textit{Dice loss}, foram as mais estáveis entre diferentes tarefas de segmentação médica.
+em que $p_i$ é a probabilidade prevista para o pixel $i$, $g_i$ é o seu rótulo (0 ou 1) e $\epsilon$ é uma constante pequena que evita a divisão por zero em recortes sem lesão. Por considerar a sobreposição da lesão como um todo, é menos afetada pela grande quantidade de fundo. Na comparação de \citeonline{ma2021loss}, as perdas compostas, que somam a entropia cruzada e a \textit{Dice loss}, foram as mais estáveis entre diferentes tarefas de segmentação médica.
 
 \section{Validação de modelos}
 \label{sec:validacao}
 
-Para saber se um modelo generaliza, ele precisa ser avaliado em dados que não foram usados no treino. Na divisão \textit{holdout}, a base é separada em treino, validação e teste: a validação serve para escolher hiperparâmetros e decidir quando parar o treino, e o teste é usado só uma vez, no final. Com bases pequenas, porém, o resultado de uma única divisão depende muito de quais imagens caíram em cada parte \cite{varoquaux2018cv}.
+Para saber se um modelo generaliza, ele precisa ser avaliado em dados que não foram usados no treino. Na divisão \textit{hold-out}, a base é separada em treino, validação e teste: a validação serve para escolher hiperparâmetros e decidir quando parar o treino, e o teste é usado só uma vez, no final. Com bases pequenas, porém, o resultado de uma única divisão depende muito de quais imagens caíram em cada parte \cite{varoquaux2018cv}.
 
 Na validação cruzada \textit{k-fold}, a base de desenvolvimento é dividida em $k$ partes (\textit{folds}) e, em cada rodada, uma parte fica separada para avaliação e as outras são usadas no treino. O resultado é a média e o desvio padrão das rodadas. Se o treino usa parada antecipada, ela não pode olhar para o \textit{fold} de avaliação, e por isso uma pequena parte dos \textit{folds} de treino é separada como validação interna. Na versão estratificada, cada parte mantém a proporção de classes, e a versão repetida executa o \textit{k-fold} várias vezes com divisões diferentes \cite{varoquaux2018cv}.
 
@@ -321,7 +321,7 @@ A partir da matriz, são definidas a acurácia, a precisão, a sensibilidade (ou
 	F_1 &= \frac{2 \cdot \text{Precisão} \cdot \text{Sensibilidade}}{\text{Precisão} + \text{Sensibilidade}}. \label{eq:f1}
 \end{align}
 
-No rastreamento da RD, a sensibilidade tem um peso grande, porque um falso negativo é um paciente doente que não foi encaminhado. Na segmentação, contudo, a acurácia e a especificidade por pixel ficam quase sempre perto de 100\%, já que o fundo domina a imagem, mesmo quando o modelo erra boa parte das lesões \cite{reinke2024pitfalls}. Por isso elas não servem como critério principal.
+No rastreamento da RD, a sensibilidade tem um peso grande, porque um falso negativo é um paciente doente que não foi encaminhado, e por isso o ponto de operação costuma ser escolhido de forma a manter a sensibilidade alta, mesmo com alguma perda de especificidade. Na segmentação, contudo, a acurácia e a especificidade por pixel ficam quase sempre perto de 100\%, já que o fundo domina a imagem, mesmo quando o modelo erra boa parte das lesões \cite{reinke2024pitfalls}. Por isso elas não servem como critério principal.
 
 \subsection{Métricas de segmentação}
 \label{sec:ft-metricas-seg}
@@ -338,7 +338,7 @@ O DSC e o IoU dependem de um limiar para transformar a probabilidade de cada pix
 \subsection{Métricas de classificação da retinopatia diabética}
 \label{sec:ft-metricas-clf}
 
-A curva ROC (\textit{Receiver Operating Characteristic}) mostra a sensibilidade em função de $1 - \text{especificidade}$ para diferentes limiares, e a área sob ela (AUC, do inglês \textit{Area Under the Curve}) vale 0,5 para um classificador aleatório e 1 para um perfeito. Na gradação da RD, ela é mais útil no problema binário de RD referenciável, como em \citeonline{gulshan2016}, junto com a sensibilidade e a especificidade em um ponto de operação escolhido. Um modelo de cinco classes também gera essa AUC: a probabilidade de RD referenciável é a soma das probabilidades previstas para os graus 2, 3 e 4, e é ela que varia com o limiar na curva. Como a APTOS não traz rótulos de edema macular, nesse cálculo a RD referenciável é definida só pelo grau.
+A curva ROC (\textit{Receiver Operating Characteristic}) mostra a sensibilidade em função de $1 - \text{especificidade}$ para diferentes limiares, e a área sob ela (AUC, do inglês \textit{Area Under the Curve}) vale 0,5 para um classificador aleatório e 1 para um perfeito. Na gradação da RD, ela é mais útil no problema binário de RD referenciável, como em \citeonline{gulshan2016}, junto com a sensibilidade e a especificidade em um ponto de operação escolhido. Um modelo de cinco classes também gera essa AUC: a probabilidade de RD referenciável é a soma das probabilidades previstas para os graus 2, 3 e 4, e é ela que varia com o limiar na curva. Quando a base não traz rótulos de edema macular, a RD referenciável só pode ser definida pelo grau, e os valores deixam de ser diretamente comparáveis aos de estudos que incluem o edema na definição.
 
 Para os cinco graus da escala ICDR, a métrica mais usada é o kappa ponderado quadrático (QWK, do inglês \textit{Quadratic Weighted Kappa}), que foi a métrica da competição APTOS 2019 \cite{aptos2019}. Diferente da acurácia, ele leva em conta a ordem dos graus e pune mais os erros entre graus distantes, como prever grau 0 para um caso de grau 4, do que entre graus vizinhos \cite{cohen1968kappa,fleiss1973kappa}. O QWK é dado pela Equação~\ref{eq:qwk}:
 \begin{equation}
@@ -364,7 +364,7 @@ Um dos testes mais usados para comparar dois modelos é o teste dos postos sinal
 \end{equation}
 Quanto menor o valor de $T$, mais as diferenças pendem para um só lado e mais forte é a evidência de que um modelo é melhor que o outro. Com poucas rodadas, o valor-\textit{p} pode ser calculado de forma exata, e, com $n$ diferenças, o menor valor-\textit{p} bilateral possível é $2/2^{n}$, cerca de 0,002 para $n = 10$.
 
-Assim como o teste \textit{t} pareado comum, o Wilcoxon trata as rodadas como independentes. Para levar em conta a sobreposição dos conjuntos de treino, \citeonline{nadeau2003inference} propuseram um teste \textit{t} corrigido, que aumenta a variância estimada de acordo com essa sobreposição. A correção depende do número de rodadas e da proporção entre o tamanho do teste e o do treino, e, na validação cruzada repetida, o número de rodadas é o número de \textit{folds} vezes o número de repetições. Neste trabalho, os dois testes serão usados juntos. O Wilcoxon foi mantido por ser o teste mais usado na área, e o teste \textit{t} corrigido entra como uma verificação complementar, de forma a considerar a dependência entre os \textit{folds}.
+Assim como o teste \textit{t} pareado comum, o Wilcoxon trata as rodadas como independentes. Para levar em conta a sobreposição dos conjuntos de treino, \citeonline{nadeau2003inference} propuseram um teste \textit{t} corrigido, que aumenta a variância estimada de acordo com essa sobreposição. A correção depende do número de rodadas e da proporção entre o tamanho do teste e o do treino, e, na validação cruzada repetida, o número de rodadas é o número de \textit{folds} vezes o número de repetições. Os dois testes podem ser usados juntos, já que o Wilcoxon é o mais usado na área e o teste \textit{t} corrigido considera a dependência entre os \textit{folds}. A forma como eles serão combinados neste trabalho está na Seção~\ref{sec:analise-estatistica}.
 
 Para ordenar vários modelos ao mesmo tempo, \citeonline{demsar2006statistical} recomenda o teste de Friedman \cite{friedman1937ranks}, que ordena os $k$ modelos em cada uma das $N$ medidas e compara os postos médios $R_j$, conforme a Equação~\ref{eq:friedman}:
 \begin{equation}

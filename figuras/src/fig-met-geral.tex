@@ -1,12 +1,13 @@
 \documentclass[border=4pt]{standalone}
-\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{mathptmx}
+\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{mathptmx}\usepackage[brazil]{babel}
 \usepackage{tikz}\usetikzlibrary{positioning,arrows.meta,calc,fit}
 \begin{document}
+\hyphenpenalty=10000\exhyphenpenalty=10000\tolerance=9999\frenchspacing
 \begin{tikzpicture}[font=\normalsize,node distance=0.55cm and 0.6cm,
   b/.style={draw,rounded corners=2pt,align=center,text width=3.6cm,minimum height=1.0cm,fill=#1},b/.default=gray!8,
   arr/.style={-{Latex[length=2.2mm]},thick}]
 \node[b=blue!10] (s1) {IDRiD (81 imagens com máscaras)};
-\node[b=blue!10,below=of s1] (s2) {Patches de $512\times512$ e janela deslizante};
+\node[b=blue!10,below=of s1] (s2) {\textit{Patches} de $512\times512$ e janela deslizante};
 \node[b=blue!10,below=of s2] (s3) {U-Net com os seis codificadores};
 \node[b=blue!10,below=of s3] (s4) {Busca, \textit{k-fold} e teste oficial};
 \node[b=blue!10,below=of s4] (s5) {Validação externa no DDR};

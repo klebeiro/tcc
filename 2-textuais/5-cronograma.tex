@@ -1,7 +1,7 @@
 \chapter{Cronograma}
 \label{chap:cronograma}
 
-As atividades do TCC II vão seguir as etapas descritas no Capítulo~\ref{chap:metodologia}, e os seus prazos estão na Tabela~\ref{tab:cronograma}. O TCC II será feito no semestre 2027.1, que pelo calendário universitário da UFC aprovado para 2027 vai de 1º de março a 22 de julho \cite{ufc2026calendario}, e por isso a tabela vai de março a julho de 2027. O tamanho de cada etapa leva em conta a estimativa de treinos e de horas de GPU da Tabela~\ref{tab:orcamento}, que fica na ordem de 150 a 300 horas para os 272 treinos do plano principal. O treino piloto não entra nessa conta. Os treinos de classificação são os mais longos, e por isso a validação cruzada dessa tarefa ocupa quase todo o mês de maio. Os 44 treinos opcionais só serão feitos se sobrar tempo em junho e aparecem em uma linha separada da tabela, fora do total do plano principal.
+As atividades do TCC II seguirão as etapas descritas no Capítulo~\ref{chap:metodologia}, e os seus prazos estão na Tabela~\ref{tab:cronograma}. O TCC II será feito no semestre 2027.1, que pelo calendário universitário da UFC aprovado para 2027 vai de 1º de março a 22 de julho \cite{ufc2026calendario}, e por isso a tabela vai de março a julho de 2027. O tamanho de cada etapa leva em conta a estimativa de treinos e de horas de GPU da Tabela~\ref{tab:orcamento}, com 272 treinos no plano principal, que será substituída pelas horas medidas no treino piloto. O piloto será antecipado para o recesso entre os dois semestres, no computador local, e confirmado na máquina externa na primeira quinzena de março, para que os treinos longos comecem em abril. A validação cruzada da classificação fica em maio, junto com o fim da validação cruzada da segmentação, com folga para repetir treinos que falharem e para começar a análise estatística das rodadas. Com isso, junho fica com os modelos finais, os testes externos e a avaliação da solução CAD, e julho fica reservado para a análise final, a escrita e a apresentação. As datas-gatilho da Seção~\ref{sec:mvp-gatilhos}, em março, abril e maio, marcam os pontos em que o andamento será conferido e em que os cortes poderão ser aplicados. Os 44 treinos opcionais só serão feitos havendo disponibilidade de tempo em junho e aparecem em uma linha separada da tabela, fora do total do plano principal.
 
 \begin{table}[H]
 	\caption{\label{tab:cronograma} Cronograma de atividades do período de 2027.1}%
@@ -12,13 +12,15 @@ As atividades do TCC II vão seguir as etapas descritas no Capítulo~\ref{chap:m
 			\midrule
 			Revisão do TCC I e ajustes pedidos pela banca & X & & & & \\
 			Preparação das bases e pré-processamento & X & & & & \\
-			Código e treino piloto (ResNet50 e ViT-B/16) & X & X & & & \\
+			Código e treino piloto (ResNet50 e ViT-B/16), iniciado no recesso & X & & & & \\
+			Conferência das datas-gatilho e aplicação dos cortes, se necessário & X & X & X & & \\
 			Busca de hiperparâmetros (108 treinos) & & X & & & \\
 			Validação cruzada da segmentação (90 treinos) & & X & X & & \\
 			Validação cruzada da classificação (60 treinos) & & & X & & \\
-			Modelos finais (12 treinos) e testes no DDR e no Messidor-2 & & & & X & \\
-			Análise estatística e medida do custo dos modelos & & & & X & X \\
-			Desenvolvimento e avaliação da solução CAD (2 treinos) & & & & X & X \\
+			Modelos finais (12 treinos) e testes na DDR e no Messidor-2 & & & & X & \\
+			Análise estatística e medida do custo dos modelos & & & X & X & X \\
+			Modelos auxiliares (2 treinos) e interface da solução CAD & & & X & X & \\
+			Avaliação da regra de edema e da solução CAD & & & & X & \\
 			Treinos opcionais, se houver folga (44 treinos) & & & & X & \\
 			Escrita contínua & & X & X & X & X \\
 			Escrita dos resultados e das conclusões & & & & X & X \\
