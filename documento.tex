@@ -129,14 +129,14 @@
 
 \ies{Universidade Federal do Ceará}
 \iessigla{UFC}
-\centro{Campus Quixadá}
+\centro{Campus Crateús}
 \departamento{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%        Informacao para TCC de Graduacao         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\graduacaoem{Nome do curso}
+\graduacaoem{Ciência da Computação}
 \habilitacao{bacharel} % Ou licenciado(a)
 
 % AVISO: Caso necessario alterar o texto de apresenta-
@@ -184,21 +184,21 @@
 %%      Informacoes relacionadas ao trabalho       %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\autor{Nome Completo do(a) Aluno(a)}
-\titulo{Título do trabalho acadêmico}
-\data{2025}
-\local{Fortaleza}
+\autor{Klênisson Mateus Oliveira Ribeiro}
+\titulo{Análise de redes profundas tradicionais, leves e baseadas em Transformers para segmentação de exsudatos e classificação da retinopatia diabética em imagens de fundoscopia}
+\data{2026}
+\local{Crateús}
 
 % Exemplo: \dataaprovacao{01 de Janeiro de 2012}
-\dataaprovacao{xx/xx/xxxx.}
+\dataaprovacao{\underline{\hspace{3cm}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%           Informação sobre o Orientador         %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\orientador{Prof. Dr. Nome do Orientador}
+\orientador{Prof. Dr. Bruno Riccelli dos Santos Silva}
 \orientadories{Universidade Federal do Ceará (UFC)}
-\orientadorcentro{Sistemas de Informação}
+\orientadorcentro{Ciência da Computação}
 \orientadorfeminino{nao} % Coloque 'sim' se for do sexo feminino
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -208,8 +208,8 @@
 % Deixe o nome do coorientador em branco para remover do documento
 
 \coorientador{}
-\coorientadories{Universidade Coorientador (SIGLA)}
-\coorientadorcentro{Centro do Coorientador (SIGLA)}
+\coorientadories{}
+\coorientadorcentro{}
 \coorientadorfeminino{nao} % Coloque 'sim' se for do sexo feminino
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -219,32 +219,41 @@
 % Atenção! Deixe em branco o nome do membro da banca para remover da folha de aprovacao
 
 % Exemplo de uso:
-% \membrodabancadois{Prof. Dr. Fulano de Tal}
-% \membrodabancadoisies{Universidade Federal do Ceará - UFC}
+% \membrodabancadois{}
+% \membrodabancadoisies{}
 
 
-\membrodabancadois{Prof. Dr. Xxxxxxx Xxxxxx Xxxxxxx}
-\membrodabancadoiscentro{Faculdade de Filosofia Dom Aureliano Matos (FAFIDAM)}
-\membrodabancadoisies{Universidade do Membro da Banca três (SIGLA)}
-\membrodabancatres{Prof. Dr. Xxxxxxx Xxxxxx Xxxxxxx}
-\membrodabancatrescentro{Centro de Ciências e Tecnologia (CCT)}
-\membrodabancatresies{Universidade do Membro da Banca quatro (SIGLA)}
-\membrodabancaquatro{Prof. Dr. Xxxxxxx Xxxxxx Xxxxxxx}
-\membrodabancaquatrocentro{Centro de Ciências e Tecnologia (CCT)}
-\membrodabancaquatroies{Universidade do Membro da Banca cinco (SIGLA)}
-\membrodabancacinco{Prof. Dr. Xxxxxxx Xxxxxx Xxxxxxx}
-\membrodabancacincocentro{Teste}
-\membrodabancacincoies{Universidade do Membro da Banca seis (SIGLA)}
-\membrodabancaseis{Prof. Dr. Xxxxxxx Xxxxxx Xxxxxxx}
+\membrodabancadois{}
+\membrodabancadoiscentro{}
+\membrodabancadoisies{}
+\membrodabancatres{}
+\membrodabancatrescentro{}
+\membrodabancatresies{}
+\membrodabancaquatro{}
+\membrodabancaquatrocentro{}
+\membrodabancaquatroies{}
+\membrodabancacinco{}
+\membrodabancacincocentro{}
+\membrodabancacincoies{}
+\membrodabancaseis{}
 \membrodabancaseiscentro{}
-\membrodabancaseisies{Universidade do Membro da Banca sete (SIGLA)}
+\membrodabancaseisies{}
 
-\begin{document}	
+% Permite quebrar URLs longas em qualquer ponto na lista de referências
+\usepackage{xurl}
+% Mantém tabelas e figuras logo após o parágrafo que as cita
+\usepackage{float}
+\usepackage{flafter}
+\usepackage{longtable}
+
+\begin{document}
+\glsaddall
+\hypersetup{pdfsubject={Analysis of traditional, lightweight and Transformer-based deep networks for exudate segmentation and diabetic retinopathy classification in fundus images}}
 
 	% Elementos pré-textuais
 	\imprimircapa
 	\imprimirfolhaderosto{}
-	\imprimirfichacatalografica{1-pre-textuais/ficha-catalografica}
+	%\imprimirfichacatalografica{1-pre-textuais/ficha-catalografica}
 	%\imprimirerrata{elementos-pre-textuais/errata}
 	\imprimirfolhadeaprovacao
 	\imprimirdedicatoria{1-pre-textuais/dedicatoria}
@@ -259,7 +268,6 @@
 	%\imprimirlistadealgoritmos
 	%\imprimirlistadecodigosfonte
 	\imprimirlistadeabreviaturasesiglas
-	\imprimirlistadesimbolos{1-pre-textuais/lista-de-simbolos}   
 	\imprimirsumario
 	
 	\setcounter{table}{0}% Deixe este comando antes da primeira tabela.
@@ -268,23 +276,14 @@
 	\textual
 	\input{2-textuais/1-introducao}
 	\input{2-textuais/2-fundamentacao-teorica}
+	\input{2-textuais/trabalhos-relacionados}
 	\input{2-textuais/3-metodologia}
-	\input{2-textuais/4-resultados}
-	\input{2-textuais/5-conclusao}
+	\input{2-textuais/5-cronograma}
 	
 	%Elementos pós-textuais	
 	\bibliography{3-pos-textuais/referencias}
 %	\imprimirglossario %	
-	\imprimirapendices
-		% Adicione aqui os apendices do seu trabalho
-		\input{3-pos-textuais/apendices/apendice-a}
-		\input{3-pos-textuais/apendices/apendice-b}
-		\input{3-pos-textuais/apendices/apendice-c}
-		
-		\imprimiranexos
-		% Adicione aqui os anexos do seu trabalho
-		\input{3-pos-textuais/anexos/anexo-a}
-		\input{3-pos-textuais/anexos/anexo-b}		
+
     %\imprimirindice
     
 	

@@ -1,0 +1,21 @@
+\documentclass[border=4pt]{standalone}
+\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{mathptmx}
+\usepackage{tikz}\usetikzlibrary{positioning,arrows.meta,calc,fit}
+\begin{document}
+\begin{tikzpicture}[font=\normalsize,node distance=0.5cm and 0.5cm,
+  b/.style={draw,rounded corners=2pt,align=center,text width=3.3cm,minimum height=1.1cm,fill=orange!15},
+  g/.style={draw,rounded corners=2pt,align=center,text width=3.3cm,minimum height=1.1cm,fill=gray!8},
+  arr/.style={-{Latex[length=2.2mm]},thick}]
+\node[g] (a) {APTOS sem duplicatas e subamostra do EyePACS};
+\node[b,right=of a] (b) {5 \textit{folds} agrupados por paciente, 2 repetições};
+\node[b,right=of b] (c) {Imagem de $384\times384$ e aumento de dados};
+\node[b,below=of c] (d) {Codificador pré-treinado e camada de 5 classes};
+\node[b,left=of d] (e) {Entropia cruzada ponderada, ajuste fino total ou parcial};
+\node[b,left=of e] (f) {Probabilidades dos graus 0 a 4};
+\node[g,below=of f] (g) {Grau previsto e P(RD referenciável)};
+\node[g,right=of g] (h) {Messidor-2 (1.744 imagens)};
+\node[g,right=of h] (i) {QWK, AUC referenciável, F1 macro};
+\draw[arr] (a)--(b); \draw[arr] (b)--(c); \draw[arr] (c)--(d); \draw[arr] (d)--(e); \draw[arr] (e)--(f);
+\draw[arr] (f)--(g); \draw[arr] (g)--(h); \draw[arr] (h)--(i);
+\end{tikzpicture}
+\end{document}

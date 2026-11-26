@@ -1,85 +1,97 @@
 \chapter{Trabalhos Relacionados}
 \label{cap:trabalhos-relacionados}
 
-Nesta seção, escreva sobre uma introdução sobre os trabalhos relacionados se eles existirem. Evite começar da seção secundária, ou seja, escreva um texto para introduzir as subseções subsequentes, as quais serão sobre cada trabalho relacionado.
+Este capítulo reúne estudos sobre a segmentação de exsudatos e a classificação da retinopatia diabética em imagens de fundoscopia. A busca foi feita no IEEE Xplore, no PubMed e no Google Acadêmico. A string de busca usada foi: (\mbox{\textit{``diabetic retinopathy''}} OR \mbox{\textit{``fundus image''}}) AND (\mbox{\textit{``exudate segmentation''}} OR \mbox{\textit{``hard exudates''}} OR \mbox{\textit{``soft exudates''}} OR \mbox{\textit{``lesion segmentation''}} OR \mbox{\textit{``grading''}} OR \mbox{\textit{``classification''}}) AND (\mbox{\textit{``deep learning''}} OR \mbox{\textit{``U-Net''}} OR \mbox{\textit{``Transformer''}}). Os resultados foram limitados a artigos em inglês publicados entre 2020 e 2026 em periódicos com revisão por pares. Foram priorizados os estudos que usam bases públicas, como IDRiD, DDR, APTOS e Messidor, e que descrevem o protocolo de avaliação. Ao final, foram selecionados onze trabalhos, a maior parte publicada em periódicos da IEEE, como o \textit{IEEE Access} e o \textit{IEEE Transactions on Medical Imaging}, e os demais em revistas da área, como \textit{Diagnostics}, \textit{Electronics}, \textit{Disease Markers} e \textit{International Journal of Imaging Systems and Technology}. A seleção não tem a pretensão de ser exaustiva. Foram incluídos estudos relacionados à proposta, seja por tratarem de exsudatos moles e duros, por compararem arquiteturas de aprendizado profundo ou por proporem uma solução CAD.
 
-\section{Trabalho Relacionado A}
-\label{sec:trabalho-relacionado-a}
+A apresentação segue duas linhas. A Seção~\ref{sec:rel-segmentacao} descreve as pesquisas de segmentação de lesões da retina, desde variantes da U-Net até modelos com atenção, redes leves e \textit{Transformers}, e a Seção~\ref{sec:rel-classificacao} descreve os estudos que classificam a RD a partir da imagem inteira. Para cada trabalho, são apresentados o método, as bases utilizadas, o principal resultado e a limitação mais relevante para esta proposta. Ao final, a Seção~\ref{sec:rel-sintese} compara os trabalhos entre si e com esta proposta.
 
-Insira o texto sobre o Trabalho A aqui:
+\section{Segmentação de exsudatos e lesões retinianas}
+\label{sec:rel-segmentacao}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\citeonline{zong2020unet} propõem, no \textit{IEEE Access}, uma U-Net com módulos \textit{Inception} e conexões residuais para a segmentação de exsudatos duros. Antes de chegar à rede, os autores recortam o fundo preto, trabalham com o canal verde e realçam o contraste; depois, usam o algoritmo de \textit{superpixels} SLIC para gerar recortes de $256 \times 256$ pixels, como forma de lidar com o tamanho reduzido do conjunto e com o desbalanceamento entre classes. Na inferência, as predições dos recortes vizinhos são combinadas para recompor a máscara da imagem completa. A perda escolhida é a \textit{focal loss}, para que os pixels de fundo, muito mais numerosos, não dominem o treinamento. Avaliado no IDRiD, com a partição oficial de 54 imagens de treino e 27 de teste, o método alcança sensibilidade de 96,38\%, especificidade de 97,14\% e acurácia de 97,95\%.
 
-\section{Trabalho Relacionado B}
-\label{sec:trabalho-relacionado-b}
+As ablações apresentadas pelos autores indicam que o recorte guiado pelo SLIC funciona melhor que o recorte aleatório e que a combinação de \textit{Inception} com conexões residuais rende mais do que cada componente sozinho. A principal limitação está no protocolo, que considera apenas exsudatos duros, uma única base, nenhum teste em outro domínio e métricas pixel a pixel que, com tanto fundo na imagem, tendem a ficar altas e dificultam a comparação com trabalhos que usam a AUPR do desafio do IDRiD \cite{porwal2020idrid}.
 
-Insira o texto sobre o Trabalho B aqui:
+\citeonline{yinghua2024hard} também segmentam exsudatos duros com uma U-Net, mas em um cenário com poucos dados, o DiaRetDB1, com apenas 89 imagens originais, das quais as máscaras binárias são geradas a partir das anotações em XML da própria base, isolando somente as regiões de exsudato duro. A rede segue o esquema clássico de codificador e decodificador, com entrada de $256 \times 256$ pixels, e o estudo utiliza aumento de dados espacial (rotações, deslocamentos, cisalhamento e espelhamentos), sem alterar a cor dos pixels, para não descaracterizar as lesões. O treinamento usa entropia cruzada binária e otimizador Adam, com \textit{early stopping} para conter o sobreajuste, algo especialmente importante quando quase todo o volume de treino vem de cópias transformadas das mesmas imagens. Com validação cruzada de seis partições, os autores reportam F1 de 0,9754. Esse valor deve ser interpretado com cautela, pois a base é pequena, apenas os exsudatos duros são considerados e os próprios autores reconhecem que faltam validação em conjuntos maiores e comparação com outros métodos para confirmar o desempenho.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\citeonline{kou2020erunet} apresentam, também no \textit{IEEE Access}, a ERU-Net, voltada a microaneurismas e exsudatos. A arquitetura parte de uma U-Net residual e organiza três caminhos de reconstrução que começam em profundidades diferentes, buscando recuperar detalhes que se perdem quando a lesão é pequena ou pouco contrastada; o treino é feito em recortes de $48 \times 48$ pixels sobre o canal verde realçado. Um ponto forte é a avaliação em três bases, E-ophtha, IDRiD e DDR, com validação cruzada de cinco partições no E-ophtha e no IDRiD. Para exsudatos, a AUC-ROC chega a 0,9866 no IDRiD e a 0,9609 no DDR, acima da U-Net e da ResU-Net no mesmo protocolo e com menos parâmetros que esta última. Os autores ainda testam a arquitetura na segmentação do disco óptico, indicando que o desenho multicaminho pode ser aplicado a outros tipos de estrutura. O estudo também reforça a escolha do IDRiD e do DDR para a etapa de segmentação deste trabalho. Contudo, a AUC-ROC, em um problema no qual quase todos os pixels pertencem ao fundo, tende a indicar um desempenho otimista. Também se observa que cada base é avaliada separadamente, sem treinar em uma e testar em outra, e os exsudatos moles não são considerados.
 
-Exemplos de inserção de quadro:
+\citeonline{yin2023dbunet} apresentam a DB-U-Net, uma rede de dois caminhos voltada a lesões pequenas. O primeiro caminho é generalista, e o segundo prevê ao mesmo tempo a lesão e a sua borda, com dois decodificadores ligados ao mesmo codificador; um módulo de fusão com ASPP junta tudo no final, e a \textit{Dice loss} é usada contra o desbalanceamento. Os testes passam por IDRiD, DDR e E-ophtha, com AUPR como métrica principal. No IDRiD, o método alcança AUPR de 0,7297 para exsudatos moles, o melhor valor nessa classe no comparativo apresentado pelos autores, e de 0,8878 para exsudatos duros. Os experimentos de ablação indicam que tanto o decodificador de contorno quanto a fusão dos dois ramos contribuem para esse ganho. Para os autores, a supervisão das bordas favorece a segmentação de lesões pequenas e de forma irregular. Os próprios autores, no entanto, reconhecem que o método ainda oscila diante de variações de iluminação, resolução e tamanho das lesões. Por outro lado, manter duas U-Nets completas em paralelo aumenta o custo de treino e de inferência. Isso dificulta o uso em cenários com pouca infraestrutura, e as bases continuam sendo avaliadas uma a uma, sem um teste explícito de generalização entre domínios.
 
+\citeonline{wan2021eadnet} propõem, na revista \textit{Disease Markers}, a EAD-Net, com codificador residual, um módulo de atenção dual (de posição e de canal) e decodificador no estilo U-Net, treinada com uma combinação de entropia cruzada binária e Dice. O mesmo modelo segmenta as quatro lesões clássicas da RD, incluindo exsudatos duros e moles, e por isso constitui um precedente de segmentação multilesão, sobretudo porque várias das equipes mais bem colocadas no desafio do IDRiD treinavam uma rede diferente para cada lesão \cite{porwal2020idrid}. No pré-processamento, as bordas pretas são removidas, as imagens são normalizadas para $1024 \times 1024$ pixels e o treino ocorre em $512 \times 512$, com espelhamentos, mudanças de escala, translações e rotações como aumento de dados. A avaliação usa o e\_ophtha\_EX, com 82 imagens, o IDRiD e uma base local de 262 fundoscopias anotadas por oftalmologistas. No e\_ophtha\_EX, a rede alcança sensibilidade de 92,77\%, e no IDRiD os autores reportam AUPR comparável à dos melhores colocados do desafio. A comparação, porém, exige cuidado. No e\_ophtha\_EX as métricas são calculadas pelo casamento entre candidatos detectados e lesões anotadas, e não pixel a pixel, e a base local não é pública, o que impede reproduzir essa parte dos resultados.
 
-	\begin{quadro}[h!]	
-		\centering
-		\Caption{\label{qua:exemplo-1} Praesent ex velit, pulvinar at massa vel, fermentum dictum mauris. Ut feugiat accumsan augue}		
-		\UFCqua{}{
-			\begin{tabular}{|c|c|l|l|}
-				\hline
-				Quisque & pharetra & tempus & vulputate \\
-				\hline
-				E1 & Complete coverage by a single transcript & Both  & Complete\\
-				\hline
-				E2 & Complete coverage by more than & Both splice sites & Complete\\
-				\hline
-				E3 & Partial coverage & Both splice sites & Both \\				
-				\hline
-			\end{tabular}
-		}{
-			\Fonte{elaborado pelo autor.}
-		}
-	\end{quadro}
+\citeonline{ali2023lezioseg} propõem o LezioSeg na revista \textit{Electronics}, um modelo leve no qual os autores usam uma MobileNet pré-treinada no ImageNet como codificador, um módulo ASPP para contexto em várias escalas, conexões de salto com portas e um bloco de atenção multiescala no decodificador, além de aumento de dados por transformações afins. O modelo resultante tem cerca de 10,7 milhões de parâmetros, menos que muitas das alternativas comparadas. No IDRiD, com 54 imagens de treino e 27 de teste, o modelo alcança AUPR de 86\% para exsudatos duros e de 81\% para exsudatos moles, no conjunto de comparação do próprio trabalho; no E-ophtha, chega a 63\% para exsudatos duros, e o DDR é usado para testar a generalização, sem retreinamento, o que fornece uma estimativa mais realista do desempenho fora do domínio de origem. O uso de arquiteturas leves é próximo do que se propõe neste trabalho, que inclui MobileNet e EfficientNet entre as redes avaliadas. Os autores aplicam o teste \textit{t} de Student, mas apenas para comparar a versão final com a própria rede de base. A limitação está no protocolo, pois todos os resultados vêm de uma única divisão fixa, sem validação cruzada. Com apenas 14 imagens de teste contendo exsudatos moles, não é possível saber o quanto esses números variariam com outra partição.
 
+\citeonline{huang2022rtnet} apresentam, no \textit{IEEE Transactions on Medical Imaging}, o RTNet, um modelo com \textit{Transformers} projetado para segmentar ao mesmo tempo microaneurismas, hemorragias e exsudatos duros e moles. A proposta parte de uma observação clínica: as lesões não aparecem isoladas e costumam ter relação espacial com os vasos. Por isso, a rede combina uma U-Net com codificador DenseNet-161 a blocos \textit{Transformer} que modelam as relações entre lesões e entre lesões e vasos. Como não existe uma base pública com anotações conjuntas de vasos e lesões da RD, as máscaras de vasos usadas no treino são pseudo-rótulos gerados por um modelo treinado no DRIVE e no STARE. A avaliação é feita no IDRiD e no DDR, e no IDRiD o RTNet alcança AUPR de 0,9024 para exsudatos duros e de 0,7502 para exsudatos moles, os melhores valores nessas duas classes no comparativo apresentado pelos autores. Os autores ainda fazem um teste de generalização, treinando no DDR e testando no IDRiD.
 
-	
-	\begin{quadro}[h!]	
-		\centering
-		\Caption{\label{qua:exemplo-2} Duis faucibus, enim quis tincidunt pellentesque}		
-		\UFCqua{}{
-			\begin{tabular}{|c|c|}
-				\hline
-				Quisque & pharetra \\
-				\hline
-				E1 & Complete coverage by a single transcript \\
-				\hline
-				E2 & Complete coverage by more than \\
-				\hline
-				E3 & Partial coverage \\
-				\hline
-				E4 & Partial coverage \\
-				\hline
-				E5 & Partial coverage \\
-				\hline
-				E6 & Partial coverage \\
-				\hline
-				E7 & Partial coverage \\
-				\hline
-			\end{tabular}
-		}{
-			\Fonte{elaborado pelo autor.}
-		}
-	\end{quadro}
+Segundo os próprios autores, a baixa qualidade das pseudo-máscaras de vasos restringe o desempenho máximo da rede. O trabalho é uma referência para a segmentação conjunta de exsudatos duros e moles, mas o custo do codificador DenseNet-161 junto com os blocos de atenção dificulta o uso em ambientes com poucos recursos, e o desempenho é reportado em uma única partição por base.
 
+\citeonline{zheng2024cascade} publicaram no \textit{International Journal of Imaging Systems and Technology} um modelo em dois estágios para as quatro lesões clássicas da RD (exsudatos duros e moles, hemorragias e microaneurismas), segmentadas de uma só vez. Cada estágio é uma U-Net modificada com blocos \textit{Transformer}: o primeiro gera uma máscara inicial e o segundo a corrige, combinando convoluções, que captam detalhes locais, com atenção, que capta o contexto da imagem. Os testes usam o IDRiD, o DDR e o DIARETDB1, e os autores relatam desempenho competitivo em relação a outros métodos, com destaque para exsudatos moles e microaneurismas. Assim como a EAD-Net e o RTNet, esse trabalho combina U-Net e atenção. No desenho em dois estágios, porém, erros da primeira etapa podem se propagar para a segunda, e o custo computacional aumenta, já que são duas redes em sequência.
 
-Texto  texto texto texto texto.
+\section{Classificação da retinopatia diabética}
+\label{sec:rel-classificacao}
 
-%\Gls{ambiguidade}
-%\Gls{braile}
-%\Gls{coerencia}
-%\Gls{dialetos}
-%\Gls{elipse}
-%\Gls{locucao-adjetiva}
-%\Gls{modificadores}
-%\Gls{paronimos}
-%\Gls{sintese}
-%\Gls{borboleta}
+\citeonline{naveen2025effnet} apresentam o EffNet-SVM no \textit{IEEE Access}, usando uma EfficientNetV2-Small pré-treinada no ImageNet para extrair características da fundoscopia e um SVM com \textit{kernel} RBF no lugar da camada \textit{softmax}. São comparadas três configurações: a EfficientNet com \textit{softmax}, um SVM alimentado com descritores tradicionais e o híbrido proposto. O estudo usa o APTOS 2019, mas agrupa os cinco graus em um problema binário (1.805 imagens sem RD e 1.857 com RD), com as imagens redimensionadas para $224 \times 224$ pixels. Nesse cenário, o modelo alcança acurácia de 97,26\%, à frente da própria EfficientNet com \textit{softmax} e de outras CNNs, como MobileNetV2, ResNet50 e DenseNet-121. Mapas Grad-CAM são usados para indicar as regiões que mais influenciam a decisão, embora a interpretabilidade obtida seja apenas parcial, já que o SVM continua pouco transparente. A proposta se relaciona com a ideia de CAD e com o uso de arquiteturas eficientes, mas o ponto mais relevante é a queda no teste externo: ao avaliar o modelo no HRF, com apenas 30 imagens, a acurácia cai para 76,76\%, o que mostra o quanto o resultado no APTOS depende do domínio de origem, além de a tarefa binária deixar de lado a gradação clínica.
+
+\citeonline{yang2024tmil} propõem, no \textit{IEEE Access}, o TMIL, uma forma de usar o ViT sem descartar a alta resolução das câmeras de fundo de olho. Em vez de reduzir a imagem inteira para $224 \times 224$ pixels, ela é redimensionada para $896 \times 896$ e dividida em 16 partes menores; cada parte passa pelo ViT e um bloco de atenção global reúne essa informação antes de decidir o grau da RD. No APTOS, em cinco classes, a versão final do modelo alcança acurácia de 85,6\%, kappa de 90,7\% e sensibilidade de 73,7\% (o resumo do artigo informa kappa de 91,5\%, valor obtido pelas versões intermediárias); no Messidor-1, em uma tarefa binária de RD referenciável, chega a 93,1\% de acurácia, reduzindo ainda o tempo de inferência em cerca de 62\% em relação ao ViT alimentado com a imagem inteira. Esse ganho vem do encurtamento da sequência de entrada, já que cada parte gera 196 \textit{tokens}, contra 3.136 quando a imagem de $896 \times 896$ é passada inteira ao ViT. O trabalho mostra que reduzir muito a resolução da imagem pode prejudicar a classificação com \textit{Transformers}. A limitação está na avaliação, feita em uma única divisão do APTOS, com o treino repetido cinco vezes, mas sem validação cruzada, e uma sensibilidade de 73,7\% que ainda deixa escapar parte dos casos doentes.
+
+O trabalho mais próximo desta proposta é o de \citeonline{boumeshed2026modular}, publicado na revista \textit{Diagnostics}. Os autores montam uma solução modular com duas partes. A primeira segmenta as quatro lesões no IDRiD, com uma U-Net com codificador ResNet-34 para cada lesão, e a segunda classifica o grau da RD de 0 a 4 com uma EfficientNet-B0 treinada no APTOS 2019. O classificador depois é testado nas 1.744 imagens graduáveis do Messidor-2 sem nenhum ajuste, e a queda de desempenho é acentuada. O QWK cai de 0,873 no teste do APTOS para 0,455 no Messidor-2, e a sensibilidade para RD referenciável cai de 92,7\% para 35,0\%. A avaliação é mais cuidadosa que a da maioria dos trabalhos citados aqui, com intervalos de confiança por \textit{bootstrap}, quatro sementes de treino e uma checagem de imagens duplicadas no APTOS. Os autores também testam acrescentar ao classificador características extraídas das lesões segmentadas, mas isso não melhora a gradação de forma significativa. Na segmentação, o Dice nos recortes com lesão fica entre 0,51 e 0,68. Em relação a esta proposta, a limitação é que cada tarefa usa uma única arquitetura, então o estudo não mostra se uma rede leve ou baseada em \textit{Transformer} perderia menos desempenho fora do domínio de origem.
+
+Para facilitar a comparação, a Tabela~\ref{tab:comparativo-relacionados} resume, para cada um dos onze trabalhos descritos neste capítulo, as bases utilizadas, a tarefa, a arquitetura, o tipo de validação, a presença de validação externa, de teste estatístico e de solução CAD, além da métrica principal relatada. A última linha descreve o que é proposto neste trabalho, e não resultados já obtidos.
+
+{%
+	\SingleSpacing%
+	\setlength{\tabcolsep}{2.5pt}%
+	\renewcommand{\arraystretch}{1.15}%
+	\setlength{\LTcapwidth}{\textwidth}%
+	\captionsetup{justification=raggedright,singlelinecheck=false}%
+	\begin{longtable}{@{}>{\scriptsize\raggedright\arraybackslash}p{1.8cm}
+		>{\scriptsize\raggedright\arraybackslash}p{1.8cm}
+		>{\scriptsize\raggedright\arraybackslash}p{1.3cm}
+		>{\scriptsize\raggedright\arraybackslash}p{2.5cm}
+		>{\scriptsize\raggedright\arraybackslash}p{1.7cm}
+		>{\scriptsize\centering\arraybackslash}p{0.8cm}
+		>{\scriptsize\centering\arraybackslash}p{1.3cm}
+		>{\scriptsize\raggedright\arraybackslash}p{2.2cm}
+		>{\scriptsize\centering\arraybackslash}p{0.7cm}@{}}
+		\caption{\label{tab:comparativo-relacionados} Comparação entre os trabalhos relacionados e este trabalho}\\
+		\toprule
+		Trabalho & Base(s) & Tarefa & Arquitetura & Validação & Val.\ ext. & Teste estat. & Métrica principal & CAD \\
+		\midrule
+		\endfirsthead
+		\multicolumn{9}{@{}l}{\footnotesize\textit{Continuação da Tabela~\ref{tab:comparativo-relacionados}}}\\
+		\toprule
+		Trabalho & Base(s) & Tarefa & Arquitetura & Validação & Val.\ ext. & Teste estat. & Métrica principal & CAD \\
+		\midrule
+		\endhead
+		\midrule
+		\multicolumn{9}{r@{}}{\footnotesize\textit{Continua na próxima página}}\\
+		\endfoot
+		\bottomrule
+		\multicolumn{9}{@{}p{15.3cm}@{}}{\ABNTEXfontereduzida Fonte: elaborada pelo autor.}\\
+		\multicolumn{9}{@{}p{15.3cm}@{}}{\ABNTEXfontereduzida Nota: \checkmark~atende; $\triangle$~atende parcialmente (na coluna Val.\ ext., de validação externa, mais de uma base avaliada, mas sem treinar em uma e testar em outra; na coluna CAD, integração apenas discutida ou feita só como fusão de características, sem ferramenta de apoio; na coluna Teste estat., teste ou intervalo de confiança sem comparação entre arquiteturas diferentes); $\times$~não atende ou não relatado; N/I: protocolo de validação não identificado na leitura realizada. EX: exsudatos duros; SE: exsudatos moles; HE: hemorragias; MA: microaneurismas.}\\
+		\endlastfoot
+			\citeonline{zong2020unet} & IDRiD & EX & U-Net com \textit{Inception} e resíduo & \textit{Hold-out} (54/27) & $\times$ & $\times$ & Sens.\ 96,38\%; Acur.\ 97,95\% & $\times$ \\
+			\citeonline{yinghua2024hard} & DiaRetDB1 & EX & U-Net modificada & 6-\textit{fold} & $\times$ & $\times$ & F1 0,975 & $\times$ \\
+			\citeonline{kou2020erunet} & E-ophtha, IDRiD, DDR & EX, MA & ERU-Net (U-Net residual multicaminho) & \textit{Hold-out}; 5-\textit{fold} & $\triangle$ & $\times$ & AUC-ROC (EX) 0,987 IDRiD; 0,961 DDR & $\times$ \\
+			\citeonline{yin2023dbunet} & IDRiD, DDR, E-ophtha & EX, SE, HE, MA & DB-U-Net (U-Net + U2Net + ASPP) & \textit{Hold-out} (54/27 no IDRiD) & $\triangle$ & $\times$ & AUPR IDRiD: EX 0,888; SE 0,730 & $\times$ \\
+			\citeonline{wan2021eadnet} & e\_ophtha\_EX, IDRiD, base local (262) & EX, SE, HE, MA & EAD-Net (residual + atenção dual) & \textit{Hold-out} (54/27 no IDRiD) & $\triangle$ & $\times$ & Sens.\ 92,77\% (e\_ophtha\_EX) & $\times$ \\
+			\citeonline{ali2023lezioseg} & IDRiD, E-ophtha, DDR & EX, SE, HE, MA & LezioSeg (MobileNet + ASPP) & \textit{Hold-out} (54/27) & \checkmark & $\triangle$ & AUPR IDRiD: EX 0,86; SE 0,81 & $\times$ \\
+			\citeonline{huang2022rtnet} & IDRiD, DDR & EX, SE, HE, MA & RTNet (U-Net/DenseNet-161 + \textit{Transformer}) & \textit{Hold-out} & \checkmark & $\times$ & AUPR IDRiD: EX 0,902; SE 0,750 & $\times$ \\
+			\citeonline{zheng2024cascade} & IDRiD, DDR, DIARETDB1 & EX, SE, HE, MA & U-Nets em cascata com \textit{Transformer} & N/I & $\triangle$ & $\times$ & PR-AUC, Dice, IoU (destaque em SE e MA) & $\times$ \\
+			\citeonline{naveen2025effnet} & APTOS, HRF & RD binária & EfficientNetV2-S + SVM & N/I & \checkmark & $\times$ & Acur.\ 97,26\% (APTOS); 76,76\% (HRF) & $\triangle$ \\
+			\citeonline{yang2024tmil} & APTOS, Messidor-1 & Graus 0--4; binária & ViT + MIL (TMIL) & \textit{Hold-out} (10\% teste; 5 repetições) & $\triangle$ & $\times$ & Acur.\ 85,6\%; kappa 90,7\% (APTOS) & $\times$ \\
+			\citeonline{boumeshed2026modular} & IDRiD; APTOS, Messidor-2 & EX, SE, HE, MA; graus 0--4 & U-Net (ResNet-34) por lesão; EfficientNet-B0 & \textit{Hold-out}; 4 sementes & \checkmark & $\triangle$ & Dice 0,51--0,68 (seg.); QWK 0,873 (APTOS), 0,455 (Messidor-2) & $\triangle$ \\
+		\midrule
+			\textbf{Este trabalho (proposto)} & IDRiD, DDR; APTOS, EyePACS, Messidor-2 & EX, SE; graus 0--4 & U-Net única com 6 codificadores: VGG16, ResNet50, MobileNetV3-Large, EfficientNet-B0, ViT-B/16, Swin-T & Busca única + 5-\textit{fold} $\times$3 (seg.) / $\times$2 agrupado por paciente (clf.) & \checkmark & \textit{t} corrigido + Holm; IC \textit{bootstrap}; DeLong & AUPR, Dice (seg.); QWK, AUC referenciável (clf.); parâmetros, MACs e latência & \checkmark \\
+	\end{longtable}%
+}
+
+\section{Síntese comparativa e lacuna abordada}
+\label{sec:rel-sintese}
+
+De modo geral, os trabalhos analisados se concentram em uma única tarefa ou arquitetura. Dos nove trabalhos que fazem segmentação, seis tratam exsudatos duros e moles juntos \cite{huang2022rtnet,yin2023dbunet,wan2021eadnet,ali2023lezioseg,zheng2024cascade,boumeshed2026modular}, e os outros três ficam nos exsudatos duros, com ou sem microaneurismas. Apenas dois dos onze estudos usam validação cruzada \cite{kou2020erunet,yinghua2024hard}. Só quatro testam o modelo em uma base diferente daquela usada no treino \cite{huang2022rtnet,ali2023lezioseg,naveen2025effnet,boumeshed2026modular}, e os demais avaliam cada conjunto separadamente ou ficam em uma única base. A análise estatística também é pouco frequente. \citeonline{ali2023lezioseg} usam o teste \textit{t} para comparar o LezioSeg com a sua rede de base, e \citeonline{boumeshed2026modular} trazem intervalos de confiança por \textit{bootstrap}, mas nenhum dos trabalhos compara arquiteturas diferentes com teste de hipótese e correção para várias comparações. As métricas também variam bastante. Parte usa AUPR, parte usa AUC-ROC e parte usa métricas pixel a pixel, o que dificulta comparações diretas.
+
+Quanto às arquiteturas, modelos leves aparecem em três trabalhos \cite{ali2023lezioseg,naveen2025effnet,boumeshed2026modular} e \textit{Transformers} em três \cite{huang2022rtnet,zheng2024cascade,yang2024tmil}, mas, entre os trabalhos selecionados, nenhum compara redes tradicionais, leves e baseadas em \textit{Transformers} sob o mesmo protocolo. O que mais se aproxima disso é o comparativo entre CNNs feito por \citeonline{naveen2025effnet}, ainda em uma tarefa binária. A gradação em cinco classes aparece em dois estudos \cite{yang2024tmil,boumeshed2026modular}. Só \citeonline{boumeshed2026modular} juntam segmentação de lesões e classificação na mesma solução, com uma arquitetura em cada tarefa e uma rede separada para cada lesão, e \citeonline{naveen2025effnet} apenas discutem essa possibilidade.
+
+Diante disso, este trabalho propõe segmentar exsudatos moles e duros, classificar a retinopatia diabética em graus 0 a 4 e comparar modelos tradicionais, leves e baseados em \textit{Transformers} sob o mesmo protocolo, com os seis codificadores ligados a uma única U-Net, que segmenta os exsudatos duros e moles ao mesmo tempo, em vez de uma rede para cada lesão. A proposta inclui validação cruzada agrupada por paciente quando a base permite, validação externa no DDR e no Messidor-2, teste \textit{t} corrigido com ajuste de Holm, intervalos \textit{bootstrap} e a medida do custo de cada rede, além de reunir os melhores modelos em uma solução de apoio ao diagnóstico que apresente a máscara de exsudatos, o grau previsto e um alerta de edema macular na mesma interface.
